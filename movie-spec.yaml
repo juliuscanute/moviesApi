@@ -1,0 +1,131 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: 'Movie API Specification'
+  contact:
+    name: 'Julius Canute'
+    url: 'https://www.juliuscanute.com'
+    email: 'juliuscanute@touchcapture.net'
+
+
+
+tags:
+- name: 'Query Movies'
+
+
+paths:
+  /v1/movies/recents:
+    get:
+      tags:
+      - 'Query Movies'
+      summary: 'Get a list of movies'
+      responses:
+        200:
+          description: 'Success'
+          schema:
+            $ref: '#/definitions/MoviePage'
+
+  /v1/movies/recent/{pageId}:
+    parameters:
+    - type: 'integer'
+      format: 'int64'
+      name: 'pageId'
+      in: 'path'
+      required: true
+    get:
+      tags:
+      - 'Query Movies'
+      summary: 'Get a list of movies [1-30] per page'
+      responses:
+        200:
+          description: 'Success'
+          schema:
+            $ref: '#/definitions/PageRecord'
+        404:
+          description: 'Invalid page ID'
+          schema:
+            $ref: '#/definitions/Exception'
+          examples:
+            PageIdNotFound:
+              date: "2018/01/31 00:00:00"
+              message: "Invalid page number = {pageId}"
+              path: "/v1/movies/recent/{pageId}"
+
+definitions:
+  Exception:
+    type: 'object'
+    properties:
+      date:
+        type: 'string'
+        format: 'date-time'
+        description: 'Date of the request'
+      message:
+        type: 'string'
+        description: 'Description of the error'
+      path:
+        type: 'string'
+        description: 'Identity of the resource'
+        
+  MoviePage:
+    type: 'object'
+    properties:
+      startPage:
+        type: 'integer'
+        example: '1'
+        description: 'Start Page'
+      endPage:
+        type: 'integer'
+        example: '10'
+        description: 'End Page'
+      movies:
+        type: 'integer'
+        example: '100'
+        description: 'Total Movies'
+
+  PageRecord:
+    type: 'object'
+    properties:
+      currentPage:
+        type: 'integer'
+        example: '1'
+        description: 'Page No'
+      records:
+        type: 'array'
+        items:
+          $ref: '#/definitions/MovieDataItem'
+
+  MovieDataItem:
+    type: 'object'
+    properties:
+      title:
+        type: 'string'
+        example: 'Star Wars: Episode IV - A New Hope'
+        description: 'Title of the movie'
+      year:
+        type: 'string'
+        example: '1977'
+        description: 'Release year of the movie'
+      poster:
+        type: 'string'
+        example: 'http://ia.media-imdb.com/images/M/MV5BOTIyMDY2NGQtOGJjNi00OTk4LWFhMDgtYmE3M2NiYzM0YTVmXkEyXkFqcGdeQXVyNTU1NTcwOTk@._V1_SX300.jpg'
+        description: 'Image location of the URI'
+      bestPrice:
+        type: 'number'
+        example: '123.5'
+        description: 'Best price for the movie'
+      providers:
+        type: 'array'
+        items:
+          $ref: '#/definitions/ProviderDataItem'
+  
+  ProviderDataItem:
+    type: 'object'
+    properties:
+      providerName:
+        type: 'string'
+        example: 'cinemaworld'
+        description: 'Name of the service provider'
+      price:
+        type: 'number'
+        example: '123.5'
+        description: 'Price for the movie from provider'  
